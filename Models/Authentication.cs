@@ -208,7 +208,7 @@ namespace HumbrellaAPI.Models
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
             password: pwd,
             salt: salt,
-            prf: KeyDerivationPrf.HMACSHA1,
+            prf: KeyDerivationPrf.HMACSHA256,
             iterationCount: 10000,
             numBytesRequested: 256 / 8));
 
@@ -221,12 +221,12 @@ namespace HumbrellaAPI.Models
             {
                 new Claim(JwtRegisteredClaimNames.UniqueName, username)
             };
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Hello World Hello World"));
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("HumbrellaAPI secret key"));
             var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "neomene",
-                audience: "the client of your app",
+                issuer: "humbrellaapi",
+                audience: "humbrellauser",
                 claims: claims,
                 notBefore: DateTime.Now,
                 expires: DateTime.Now.AddDays(30),

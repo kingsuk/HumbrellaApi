@@ -61,9 +61,9 @@ namespace HumbrellaAPI.Controllers
         [Route("CheckUserIDAvailability")]
         public IActionResult CheckUserIDAvailability([FromBody]string userId)
         {
-            if (!ModelState.IsValid)
+            if (userId == null || userId.Trim() == "")
             {
-                return new JsonResult(BadRequest(ModelState));
+                return new JsonResult(BadRequest("User Id invalid"));
             }
             else
             {

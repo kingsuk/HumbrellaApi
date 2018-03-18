@@ -19,6 +19,8 @@ namespace HumbrellaAPI
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseKestrel()
+                .UseUrls("http://*:4040")
                 .UseStartup<Startup>()
                 .Build();
     }

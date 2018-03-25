@@ -7,8 +7,10 @@ namespace HumbrellaAPI.Entities
 {
     public class DBResultEnity
     {
-        public int STATUSCODE { get; set; }
+        public int StatusCode { get; set; }
 
-        public string STATUSDESC { get; set; }
+        public string StatusDesc { get; set; }
+
+        public object Result { get; set; }
     }
 }

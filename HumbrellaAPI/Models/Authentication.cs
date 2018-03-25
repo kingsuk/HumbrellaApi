@@ -25,12 +25,10 @@ namespace HumbrellaAPI.Models
             dBContext = new DBContext();
         }
 
-        public ResponseEntity login(AuthenticationEntity authenticationEntity)
+        public DBResultEnity login(AuthenticationEntity authenticationEntity)
         {
             try
             {
-                ResponseEntity responseEntity = new ResponseEntity();
-
                 var command = dBContext.Connection.CreateCommand() as SqlCommand;
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "dbo.prcCheckUserLogin";
@@ -55,23 +53,19 @@ namespace HumbrellaAPI.Models
                     {
                         cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
                     }).CreateMapper();
-                    List<DBResultEnity> dBResult = config.Map<List<DBResultEnity>>(result);
+                    DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
 
-                    DBResultEnity dBResultEnity = dBResult.FirstOrDefault();
-
-                    responseEntity.StatusCode = dBResultEnity.STATUSCODE;
-                    responseEntity.StatusMessage = dBResultEnity.STATUSDESC;
-                    if (dBResultEnity.STATUSCODE == 1)
+                    if (dBResult.StatusCode == 1)
                     {
-                        responseEntity.ResponseResult = getJWTPacket(authenticationEntity.UserId);
+                        dBResult.Result = getJWTPacket(authenticationEntity.UserId);
                     }
-                    return responseEntity;
+                    return dBResult;
                 }
                 else
                 {
-                    responseEntity.StatusCode = 0;
-                    responseEntity.StatusMessage = "Failed";
-                    return responseEntity;
+                    DBResultEnity dBResult = new DBResultEnity();
+                    dBResult.StatusCode = -1;
+                    return dBResult;
                 }
             }
             catch (Exception e)
@@ -80,62 +74,75 @@ namespace HumbrellaAPI.Models
             }
         }
 
-        public ResponseEntity register(AuthenticationEntity authenticationEntity)
+        public DBResultEnity register(RegistrationEntity registrationEntity)
         {
             try
             {
-                ResponseEntity responseEntity = new ResponseEntity();
-
-                if (checkUserIDAvailability(authenticationEntity.UserId).StatusCode == 0)
+                if (checkUserIDAvailability(registrationEntity.UserId).StatusCode == 1)
                 {
-                    var command = dBContext.Connection.CreateCommand() as SqlCommand;
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.CommandText = "dbo.prcUpSertUserLogin";
-                    command.Parameters.Add(new SqlParameter
+                    if (checkUserEmailAvailability(registrationEntity.EmailId).StatusCode == 1)
                     {
-                        ParameterName = "@UID",
-                        DbType = DbType.String,
-                        Value = authenticationEntity.UserId,
-                    });
-                    command.Parameters.Add(new SqlParameter
-                    {
-                        ParameterName = "@PWD",
-                        DbType = DbType.String,
-                        Value = hashPassword(authenticationEntity.Pwd),
-                    });
-
-                    List<IDictionary<String, Object>> result = dBContext.GetDatabaseResultSet(command);
-
-                    if (result != null)
-                    {
-                        var config = new MapperConfiguration(cfg =>
+                        var command = dBContext.Connection.CreateCommand() as SqlCommand;
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.CommandText = "dbo.prcUpSertUserLogin";
+                        command.Parameters.Add(new SqlParameter
                         {
-                            cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
-                        }).CreateMapper();
-                        List<DBResultEnity> dBResult = config.Map<List<DBResultEnity>>(result);
-
-                        DBResultEnity dBResultEnity = dBResult.FirstOrDefault();
-
-                        responseEntity.StatusCode = dBResultEnity.STATUSCODE;
-                        responseEntity.StatusMessage = dBResultEnity.STATUSDESC;
-                        if (dBResultEnity.STATUSCODE == 1)
+                            ParameterName = "@UID",
+                            DbType = DbType.String,
+                            Value = registrationEntity.UserId,
+                        });
+                        command.Parameters.Add(new SqlParameter
                         {
-                            responseEntity.ResponseResult = getJWTPacket(authenticationEntity.UserId);
+                            ParameterName = "@EMAIL",
+                            DbType = DbType.String,
+                            Value = hashPassword(registrationEntity.EmailId),
+                        });
+                        command.Parameters.Add(new SqlParameter
+                        {
+                            ParameterName = "@PWD",
+                            DbType = DbType.String,
+                            Value = hashPassword(registrationEntity.Pwd),
+                        });
+
+                        List<IDictionary<String, Object>> result = dBContext.GetDatabaseResultSet(command);
+
+                        if (result != null)
+                        {
+                            var config = new MapperConfiguration(cfg =>
+                            {
+                                cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
+                            }).CreateMapper();
+                            DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
+
+                            if (dBResult.StatusCode == 1)
+                            {
+                                dBResult.Result = getJWTPacket(registrationEntity.UserId);
+                            }
+                            return dBResult;
                         }
-                        return responseEntity;
+                        else
+                        {
+                            DBResultEnity dBResult = new DBResultEnity();
+                            dBResult.StatusCode = -1;
+                            return dBResult;
+                        }
                     }
                     else
                     {
-                        responseEntity.StatusCode = 0;
-                        responseEntity.StatusMessage = "Failed";
-                        return responseEntity;
+                        DBResultEnity dBResultEnity = new DBResultEnity();
+                        dBResultEnity.StatusCode = 0;
+                        dBResultEnity.StatusDesc = "User email already exists.";
+
+                        return dBResultEnity;
                     }
                 }
                 else
                 {
-                    responseEntity.StatusCode = 0;
-                    responseEntity.StatusMessage = "User already exists";
-                    return responseEntity;
+                    DBResultEnity dBResultEnity = new DBResultEnity();
+                    dBResultEnity.StatusCode = 0;
+                    dBResultEnity.StatusDesc = "UserId already exists.";
+
+                    return dBResultEnity;
                 }
             }
             catch(Exception e)
@@ -144,12 +151,10 @@ namespace HumbrellaAPI.Models
             }
         }
 
-        public ResponseEntity checkUserIDAvailability(string UserId)
+        public DBResultEnity checkUserIDAvailability(string UserId)
         {
             try
             {
-                ResponseEntity responseEntity = new ResponseEntity();
-
                 var command = dBContext.Connection.CreateCommand() as SqlCommand;
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "dbo.prcCheckUserIDAvailability";
@@ -168,19 +173,54 @@ namespace HumbrellaAPI.Models
                     {
                         cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
                     }).CreateMapper();
-                    List<DBResultEnity> dBResult = config.Map<List<DBResultEnity>>(result);
+                    DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
 
-                    DBResultEnity dBResultEnity = dBResult.FirstOrDefault();
-
-                    responseEntity.StatusCode = dBResultEnity.STATUSCODE;
-                    responseEntity.StatusMessage = dBResultEnity.STATUSDESC;
-                    return responseEntity;
+                    return dBResult;
                 }
                 else
                 {
-                    responseEntity.StatusCode = 0;
-                    responseEntity.StatusMessage = "Failed";
-                    return responseEntity;
+                    DBResultEnity dBResult = new DBResultEnity();
+                    dBResult.StatusCode = -1;
+                    return dBResult;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public DBResultEnity checkUserEmailAvailability(string email)
+        {
+            try
+            {
+                var command = dBContext.Connection.CreateCommand() as SqlCommand;
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "dbo.prcCheckUserEmailAvailability";
+                command.Parameters.Add(new SqlParameter
+                {
+                    ParameterName = "@EMAIL",
+                    DbType = DbType.String,
+                    Value = hashPassword(email),
+                });
+
+                List<IDictionary<String, Object>> result = dBContext.GetDatabaseResultSet(command);
+
+                if (result != null)
+                {
+                    var config = new MapperConfiguration(cfg =>
+                    {
+                        cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
+                    }).CreateMapper();
+                    DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
+
+                    return dBResult;
+                }
+                else
+                {
+                    DBResultEnity dBResult = new DBResultEnity();
+                    dBResult.StatusCode = -1;
+                    return dBResult;
                 }
             }
             catch (Exception e)

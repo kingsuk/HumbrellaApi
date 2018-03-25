@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using HumbrellaAPI.Entities;
 using HumbrellaAPI.Models;
@@ -17,7 +18,7 @@ namespace HumbrellaAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("PushUserDetails")]
-        public IActionResult PushUserDetails([FromBody]UserDetailsEntity userDetailsEntity)
+        public IActionResult PushUserDetails([FromBody]UpdateUserDetailsEntity updateUserDetailsEntity)
         {
             if (!ModelState.IsValid)
             {
@@ -27,12 +28,22 @@ namespace HumbrellaAPI.Controllers
             {
                 try
                 {
+                    string userId = HttpContext.User.Claims.Single(claim => claim.Type == ClaimTypes.Name).Value;
                     UserDetails userDetails = new UserDetails();
-                    return new JsonResult(userDetails.pushUserDetails(userDetailsEntity));
+                    DBResultEnity dBResult = userDetails.pushUserDetails(updateUserDetailsEntity, userId);
+
+                    if (dBResult.StatusCode == 1)
+                    {
+                        return StatusCode(200, dBResult);
+                    }
+                    else
+                    {
+                        return StatusCode(501);
+                    }
                 }
                 catch (Exception e)
                 {
-                    return new JsonResult(StatusCode(500, e.Message));
+                    return StatusCode(500, e.Message);
                 }
             }
         }

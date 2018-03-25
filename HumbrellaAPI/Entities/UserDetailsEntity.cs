@@ -8,9 +8,21 @@ namespace HumbrellaAPI.Entities
 {
     public class UserDetailsEntity
     {
-        [Required]
         public string UserId { get; set; }
 
+        public string FirstName { get; set; }
+
+        public string MiddleName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Gender { get; set; }
+
+        public string PersonalMailAddress { get; set; }
+    }
+
+    public class UpdateUserDetailsEntity
+    {
         [Required]
         public string FirstName { get; set; }
 

@@ -18,12 +18,10 @@ namespace HumbrellaAPI.Models
             dBContext = new DBContext();
         }
 
-        public ResponseEntity pushUserDetails(UserDetailsEntity userDetailsEntity)
+        public DBResultEnity pushUserDetails(UpdateUserDetailsEntity updateUserDetailsEntity, string userId)
         {
             try
             {
-                ResponseEntity responseEntity = new ResponseEntity();
-
                 var command = dBContext.Connection.CreateCommand() as SqlCommand;
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "dbo.prcUpSertUserDetails";
@@ -31,37 +29,37 @@ namespace HumbrellaAPI.Models
                 {
                     ParameterName = "@UID",
                     DbType = DbType.String,
-                    Value = userDetailsEntity.UserId,
+                    Value = userId,
                 });
                 command.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@FNAME",
                     DbType = DbType.String,
-                    Value = userDetailsEntity.FirstName,
+                    Value = updateUserDetailsEntity.FirstName,
                 });
                 command.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@MNAME",
                     DbType = DbType.String,
-                    Value = userDetailsEntity.MiddleName,
+                    Value = updateUserDetailsEntity.MiddleName,
                 });
                 command.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@LNAME",
                     DbType = DbType.String,
-                    Value = userDetailsEntity.LastName,
+                    Value = updateUserDetailsEntity.LastName,
                 });
                 command.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@GENDER",
                     DbType = DbType.String,
-                    Value = userDetailsEntity.Gender,
+                    Value = updateUserDetailsEntity.Gender,
                 });
                 command.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@MAIL",
                     DbType = DbType.String,
-                    Value = userDetailsEntity.PersonalMailAddress,
+                    Value = updateUserDetailsEntity.PersonalMailAddress,
                 });
 
                 List<IDictionary<String, Object>> result = dBContext.GetDatabaseResultSet(command);
@@ -72,19 +70,15 @@ namespace HumbrellaAPI.Models
                     {
                         cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
                     }).CreateMapper();
-                    List<DBResultEnity> dBResult = config.Map<List<DBResultEnity>>(result);
+                    DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
 
-                    DBResultEnity dBResultEnity = dBResult.FirstOrDefault();
-
-                    responseEntity.StatusCode = dBResultEnity.STATUSCODE;
-                    responseEntity.StatusMessage = dBResultEnity.STATUSDESC;
-                    return responseEntity;
+                    return dBResult;
                 }
                 else
                 {
-                    responseEntity.StatusCode = 0;
-                    responseEntity.StatusMessage = "Failed";
-                    return responseEntity;
+                    DBResultEnity dBResult = new DBResultEnity();
+                    dBResult.StatusCode = -1;
+                    return dBResult;
                 }
             }
             catch (Exception e)

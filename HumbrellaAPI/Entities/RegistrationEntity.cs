@@ -9,10 +9,10 @@ namespace HumbrellaAPI.Entities
     public class RegistrationEntity
     {
         [Required]
-        public string UserId { get; set; }
+        public string UserID { get; set; }
 
         [Required]
-        public string EmailId { get; set; }
+        public string EmailID { get; set; }
 
         [Required]
         public string Pwd { get; set; }

@@ -18,7 +18,7 @@ namespace HumbrellaAPI.Models
             dBContext = new DBContext();
         }
 
-        public DBResultEnity pushUserDetails(UpdateUserDetailsEntity updateUserDetailsEntity, string userId)
+        public ResponseEnity pushUserDetails(UpdateUserDetailsEntity updateUserDetailsEntity, string userId)
         {
             try
             {
@@ -68,17 +68,17 @@ namespace HumbrellaAPI.Models
                 {
                     var config = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
+                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
                     }).CreateMapper();
-                    DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
+                    ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
 
-                    return dBResult;
+                    return dBResponse;
                 }
                 else
                 {
-                    DBResultEnity dBResult = new DBResultEnity();
-                    dBResult.StatusCode = -1;
-                    return dBResult;
+                    ResponseEnity response = new ResponseEnity();
+                    response.StatusCode = -1;
+                    return response;
                 }
             }
             catch (Exception e)

@@ -6,17 +6,60 @@ using HumbrellaAPI.Entities;
 using HumbrellaAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace HumbrellaAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/v1/Authentication")]
-    public class AuthenticationController : Controller
+    [Route("api/v1/OTPAuthentication")]
+    public class OTPAuthenticationController : Controller
     {
+        IConfiguration configuration;
+        public OTPAuthenticationController(IConfiguration iconfiguration)
+        {
+            configuration = iconfiguration;
+        }
         [AppAuthorize]
         [HttpPost]
-        [Route("Login")]
-        public IActionResult Login([FromBody]AuthenticationEntity authEntity)
+        [Route("SendMobileOTP")]
+        public IActionResult SendMobileOTP([FromBody]string mobileNumber)
+        {
+            Int64 number;
+            if (mobileNumber == null || mobileNumber.Trim() == "" || mobileNumber.Length!=10 || !Int64.TryParse(mobileNumber, out number))
+            {
+                return new BadRequestObjectResult("Mobile number invalid");
+            }
+            else
+            {
+                try
+                {
+                    OTPAuthentication otpAuth = new OTPAuthentication(configuration);
+                    ResponseEnity response = otpAuth.SendMobileOTP(mobileNumber);
+
+                    if (response.StatusCode == 1)
+                    {
+                        return StatusCode(200, response);
+                    }
+                    else if (response.StatusCode == 0)
+                    {
+                        return StatusCode(400, response);
+                    }
+                    else
+                    {
+                        return StatusCode(501);
+                    }
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(500, e.Message);
+                }
+            }
+        }
+
+        //[AppAuthorize]
+        [HttpPost]
+        [Route("VerifyMobileOTP")]
+        public IActionResult VerifyMobileOTP([FromBody]OTPDetailsEntity otpDetails)
         {
             if (!ModelState.IsValid)
             {
@@ -26,8 +69,8 @@ namespace HumbrellaAPI.Controllers
             {
                 try
                 {
-                    Authentication auth = new Authentication();
-                    ResponseEnity response = auth.login(authEntity);
+                    OTPAuthentication otpAuth = new OTPAuthentication(configuration);
+                    ResponseEnity response = otpAuth.VerifyMobileOTP(otpDetails.ID, otpDetails.OTP);
 
                     if (response.StatusCode == 1)
                     {
@@ -49,10 +92,42 @@ namespace HumbrellaAPI.Controllers
             }
         }
 
-        [AppAuthorize]
+        //[AppAuthorize]
         [HttpPost]
-        [Route("Register")]
-        public IActionResult Register([FromBody]RegistrationEntity registrationEntity)
+        [Route("SendEmailOTP")]
+        public IActionResult SendEmailOTP([FromBody]string email)
+        {
+            if (email == null || email.Trim() == "")
+            {
+                return new BadRequestObjectResult("Email invalid");
+            }
+            else
+            {
+                try
+                {
+                    OTPAuthentication otpAuth = new OTPAuthentication(configuration);
+                    ResponseEnity response = otpAuth.SendEmailOTP(email);
+
+                    if (response.StatusCode == 1)
+                    {
+                        return StatusCode(200, response);
+                    }
+                    else
+                    {
+                        return StatusCode(501);
+                    }
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(500, e.Message);
+                }
+            }
+        }
+
+        //[AppAuthorize]
+        [HttpPost]
+        [Route("VerifyEmailOTP")]
+        public IActionResult VerifyEmailOTP([FromBody]OTPDetailsEntity otpDetails)
         {
             if (!ModelState.IsValid)
             {
@@ -62,8 +137,8 @@ namespace HumbrellaAPI.Controllers
             {
                 try
                 {
-                    Authentication auth = new Authentication();
-                    ResponseEnity response = auth.register(registrationEntity);
+                    OTPAuthentication otpAuth = new OTPAuthentication(configuration);
+                    ResponseEnity response = otpAuth.VerifyEmailOTP(otpDetails.ID, otpDetails.OTP);
 
                     if (response.StatusCode == 1)
                     {
@@ -71,79 +146,7 @@ namespace HumbrellaAPI.Controllers
                     }
                     else if (response.StatusCode == 0)
                     {
-                        return StatusCode(409, response);
-                    }
-                    else
-                    {
-                        return StatusCode(501);
-                    }
-                }
-                catch (Exception e)
-                {
-                    return StatusCode(500, e.Message);
-                }
-            }
-        }
-
-        [AppAuthorize]
-        [HttpGet]
-        [Route("CheckUserIDAvailability")]
-        public IActionResult CheckUserIDAvailability(string userId)
-        {
-            if (userId == null || userId.Trim() == "")
-            {
-                return new BadRequestObjectResult("User Id invalid");
-            }
-            else
-            {
-                try
-                {
-                    Authentication auth = new Authentication();
-                    ResponseEnity response = auth.checkUserIDAvailability(userId);
-
-                    if (response.StatusCode == 1)
-                    {
-                        return StatusCode(200, response);
-                    }
-                    else if (response.StatusCode == 0)
-                    {
-                        return StatusCode(409, response);
-                    }
-                    else
-                    {
-                        return StatusCode(501);
-                    }
-                }
-                catch (Exception e)
-                {
-                    return StatusCode(500, e.Message);
-                }
-            }
-        }
-
-        [AppAuthorize]
-        [HttpGet]
-        [Route("CheckEmailAvailability")]
-        public IActionResult CheckEmailAvailability(string email)
-        {
-            if (email == null || email.Trim() == "")
-            {
-                return new JsonResult(BadRequest("User Id invalid"));
-            }
-            else
-            {
-                try
-                {
-                    Authentication auth = new Authentication();
-                    ResponseEnity response = auth.checkUserEmailAvailability(email);
-
-                    if(response.StatusCode == 1)
-                    {
-                        return StatusCode(200, response);
-                    }
-                    else if(response.StatusCode == 0)
-                    {
-                        return StatusCode(409, response);
+                        return StatusCode(401, response);
                     }
                     else
                     {

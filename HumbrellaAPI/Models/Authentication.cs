@@ -25,7 +25,7 @@ namespace HumbrellaAPI.Models
             dBContext = new DBContext();
         }
 
-        public DBResultEnity login(AuthenticationEntity authenticationEntity)
+        public ResponseEnity login(AuthenticationEntity authenticationEntity)
         {
             try
             {
@@ -36,13 +36,13 @@ namespace HumbrellaAPI.Models
                 {
                     ParameterName = "@UID",
                     DbType = DbType.String,
-                    Value = authenticationEntity.UserId,
+                    Value = authenticationEntity.UserID,
                 });
                 command.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@PWD",
                     DbType = DbType.String,
-                    Value = hashPassword(authenticationEntity.Pwd),
+                    Value = Helper.hashValue(authenticationEntity.Pwd),
                 });
 
                 List<IDictionary<String, Object>> result = dBContext.GetDatabaseResultSet(command);
@@ -51,21 +51,21 @@ namespace HumbrellaAPI.Models
                 {
                     var config = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
+                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
                     }).CreateMapper();
-                    DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
+                    ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
 
-                    if (dBResult.StatusCode == 1)
+                    if (dBResponse.StatusCode == 1)
                     {
-                        dBResult.Result = getJWTPacket(authenticationEntity.UserId);
+                        dBResponse.Result = getJWTPacket(authenticationEntity.UserID);
                     }
-                    return dBResult;
+                    return dBResponse;
                 }
                 else
                 {
-                    DBResultEnity dBResult = new DBResultEnity();
-                    dBResult.StatusCode = -1;
-                    return dBResult;
+                    ResponseEnity response = new ResponseEnity();
+                    response.StatusCode = -1;
+                    return response;
                 }
             }
             catch (Exception e)
@@ -74,13 +74,13 @@ namespace HumbrellaAPI.Models
             }
         }
 
-        public DBResultEnity register(RegistrationEntity registrationEntity)
+        public ResponseEnity register(RegistrationEntity registrationEntity)
         {
             try
             {
-                if (checkUserIDAvailability(registrationEntity.UserId).StatusCode == 1)
+                if (checkUserIDAvailability(registrationEntity.UserID).StatusCode == 1)
                 {
-                    if (checkUserEmailAvailability(registrationEntity.EmailId).StatusCode == 1)
+                    if (checkUserEmailAvailability(registrationEntity.EmailID).StatusCode == 1)
                     {
                         var command = dBContext.Connection.CreateCommand() as SqlCommand;
                         command.CommandType = CommandType.StoredProcedure;
@@ -89,19 +89,19 @@ namespace HumbrellaAPI.Models
                         {
                             ParameterName = "@UID",
                             DbType = DbType.String,
-                            Value = registrationEntity.UserId,
+                            Value = registrationEntity.UserID,
                         });
                         command.Parameters.Add(new SqlParameter
                         {
                             ParameterName = "@EMAIL",
                             DbType = DbType.String,
-                            Value = hashPassword(registrationEntity.EmailId),
+                            Value = Helper.hashValue(registrationEntity.EmailID),
                         });
                         command.Parameters.Add(new SqlParameter
                         {
                             ParameterName = "@PWD",
                             DbType = DbType.String,
-                            Value = hashPassword(registrationEntity.Pwd),
+                            Value = Helper.hashValue(registrationEntity.Pwd),
                         });
 
                         List<IDictionary<String, Object>> result = dBContext.GetDatabaseResultSet(command);
@@ -110,39 +110,37 @@ namespace HumbrellaAPI.Models
                         {
                             var config = new MapperConfiguration(cfg =>
                             {
-                                cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
+                                cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
                             }).CreateMapper();
-                            DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
+                            ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
 
-                            if (dBResult.StatusCode == 1)
+                            if (dBResponse.StatusCode == 1)
                             {
-                                dBResult.Result = getJWTPacket(registrationEntity.UserId);
+                                dBResponse.Result = getJWTPacket(registrationEntity.UserID);
                             }
-                            return dBResult;
+                            return dBResponse;
                         }
                         else
                         {
-                            DBResultEnity dBResult = new DBResultEnity();
-                            dBResult.StatusCode = -1;
-                            return dBResult;
+                            ResponseEnity response = new ResponseEnity();
+                            response.StatusCode = -1;
+                            return response;
                         }
                     }
                     else
                     {
-                        DBResultEnity dBResultEnity = new DBResultEnity();
-                        dBResultEnity.StatusCode = 0;
-                        dBResultEnity.StatusDesc = "User email already exists.";
-
-                        return dBResultEnity;
+                        ResponseEnity response = new ResponseEnity();
+                        response.StatusCode = 0;
+                        response.StatusDesc = "User email already exists.";
+                        return response;
                     }
                 }
                 else
                 {
-                    DBResultEnity dBResultEnity = new DBResultEnity();
-                    dBResultEnity.StatusCode = 0;
-                    dBResultEnity.StatusDesc = "UserId already exists.";
-
-                    return dBResultEnity;
+                    ResponseEnity response = new ResponseEnity();
+                    response.StatusCode = 0;
+                    response.StatusDesc = "UserId already exists.";
+                    return response;
                 }
             }
             catch(Exception e)
@@ -151,7 +149,7 @@ namespace HumbrellaAPI.Models
             }
         }
 
-        public DBResultEnity checkUserIDAvailability(string UserId)
+        public ResponseEnity checkUserIDAvailability(string UserId)
         {
             try
             {
@@ -171,17 +169,17 @@ namespace HumbrellaAPI.Models
                 {
                     var config = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
+                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
                     }).CreateMapper();
-                    DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
+                    ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
 
-                    return dBResult;
+                    return dBResponse;
                 }
                 else
                 {
-                    DBResultEnity dBResult = new DBResultEnity();
-                    dBResult.StatusCode = -1;
-                    return dBResult;
+                    ResponseEnity response = new ResponseEnity();
+                    response.StatusCode = -1;
+                    return response;
                 }
             }
             catch (Exception e)
@@ -190,7 +188,7 @@ namespace HumbrellaAPI.Models
             }
         }
 
-        public DBResultEnity checkUserEmailAvailability(string email)
+        public ResponseEnity checkUserEmailAvailability(string email)
         {
             try
             {
@@ -201,7 +199,7 @@ namespace HumbrellaAPI.Models
                 {
                     ParameterName = "@EMAIL",
                     DbType = DbType.String,
-                    Value = hashPassword(email),
+                    Value = Helper.hashValue(email),
                 });
 
                 List<IDictionary<String, Object>> result = dBContext.GetDatabaseResultSet(command);
@@ -210,36 +208,23 @@ namespace HumbrellaAPI.Models
                 {
                     var config = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<IDictionary<String, Object>, List<DBResultEnity>>();
+                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
                     }).CreateMapper();
-                    DBResultEnity dBResult = config.Map<List<DBResultEnity>>(result).FirstOrDefault();
+                    ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
 
-                    return dBResult;
+                    return dBResponse;
                 }
                 else
                 {
-                    DBResultEnity dBResult = new DBResultEnity();
-                    dBResult.StatusCode = -1;
-                    return dBResult;
+                    ResponseEnity response = new ResponseEnity();
+                    response.StatusCode = -1;
+                    return response;
                 }
             }
             catch (Exception e)
             {
                 throw e;
             }
-        }
-
-        private string hashPassword(string pwd)
-        {
-            byte[] salt = Encoding.ASCII.GetBytes("NZsP6NnmfBuYeJrrAKNuVQ==");
-            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-            password: pwd,
-            salt: salt,
-            prf: KeyDerivationPrf.HMACSHA256,
-            iterationCount: 10000,
-            numBytesRequested: 256 / 8));
-
-            return hashed;
         }
 
         private string getJWTPacket(string username)

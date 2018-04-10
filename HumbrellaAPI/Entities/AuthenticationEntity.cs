@@ -9,7 +9,7 @@ namespace HumbrellaAPI.Entities
     public class AuthenticationEntity
     {
         [Required]
-        public string UserId { get; set; }
+        public string UserID { get; set; }
 
         [Required]
         public string Pwd { get; set; }

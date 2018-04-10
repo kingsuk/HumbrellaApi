@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,11 @@ namespace HumbrellaAPI
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                            .SetBasePath(Directory.GetCurrentDirectory())
+                            .AddJsonFile("appsettings.json");
+
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -29,6 +34,8 @@ namespace HumbrellaAPI
         {
             services.AddCors();
             services.AddMvc();
+
+            services.AddSingleton<IConfiguration>(Configuration);
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>

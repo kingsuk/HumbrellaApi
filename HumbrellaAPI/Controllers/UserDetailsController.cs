@@ -30,11 +30,11 @@ namespace HumbrellaAPI.Controllers
                 {
                     string userId = HttpContext.User.Claims.Single(claim => claim.Type == ClaimTypes.Name).Value;
                     UserDetails userDetails = new UserDetails();
-                    DBResultEnity dBResult = userDetails.pushUserDetails(updateUserDetailsEntity, userId);
+                    ResponseEnity dBResponse = userDetails.pushUserDetails(updateUserDetailsEntity, userId);
 
-                    if (dBResult.StatusCode == 1)
+                    if (dBResponse.StatusCode == 1)
                     {
-                        return StatusCode(200, dBResult);
+                        return StatusCode(200, dBResponse);
                     }
                     else
                     {

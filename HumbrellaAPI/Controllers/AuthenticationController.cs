@@ -13,7 +13,7 @@ namespace HumbrellaAPI.Controllers
     [Route("api/v1/Authentication")]
     public class AuthenticationController : Controller
     {
-        [AppAuthorize]
+        //[AppAuthorize]
         [HttpPost]
         [Route("Login")]
         public IActionResult Login([FromBody]AuthenticationEntity authEntity)
@@ -49,7 +49,7 @@ namespace HumbrellaAPI.Controllers
             }
         }
 
-        [AppAuthorize]
+        //[AppAuthorize]
         [HttpPost]
         [Route("Register")]
         public IActionResult Register([FromBody]RegistrationEntity registrationEntity)
@@ -85,7 +85,7 @@ namespace HumbrellaAPI.Controllers
             }
         }
 
-        [AppAuthorize]
+        //[AppAuthorize]
         [HttpGet]
         [Route("CheckUserIDAvailability")]
         public IActionResult CheckUserIDAvailability(string userId)
@@ -121,7 +121,7 @@ namespace HumbrellaAPI.Controllers
             }
         }
 
-        [AppAuthorize]
+        //[AppAuthorize]
         [HttpGet]
         [Route("CheckEmailAvailability")]
         public IActionResult CheckEmailAvailability(string email)

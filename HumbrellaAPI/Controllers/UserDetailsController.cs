@@ -15,7 +15,7 @@ namespace HumbrellaAPI.Controllers
     [Route("api/v1/UserDetails")]
     public class UserDetailsController : Controller
     {
-        [Authorize]
+        //[Authorize]
         [HttpPost]
         [Route("PushUserDetails")]
         public IActionResult PushUserDetails([FromBody]UpdateUserDetailsEntity updateUserDetailsEntity)
@@ -30,11 +30,11 @@ namespace HumbrellaAPI.Controllers
                 {
                     string userId = HttpContext.User.Claims.Single(claim => claim.Type == ClaimTypes.Name).Value;
                     UserDetails userDetails = new UserDetails();
-                    ResponseEnity dBResponse = userDetails.pushUserDetails(updateUserDetailsEntity, userId);
+                    ResponseEnity response = userDetails.pushUserDetails(updateUserDetailsEntity, userId);
 
-                    if (dBResponse.StatusCode == 1)
+                    if (response.StatusCode == 1)
                     {
-                        return StatusCode(200, dBResponse);
+                        return StatusCode(200, response);
                     }
                     else
                     {

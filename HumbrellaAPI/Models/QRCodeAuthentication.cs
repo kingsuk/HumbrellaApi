@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using uPLibrary.Networking.M2Mqtt;
 
 namespace HumbrellaAPI.Models
 {
@@ -98,12 +99,81 @@ namespace HumbrellaAPI.Models
             }
         }
 
+        public ResponseEnity verifyQRCode(string qrCode)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var qrCodeToken = handler.ReadToken(qrCode) as JwtSecurityToken;
+            var stationId = qrCodeToken.Claims.Single(claim => claim.Type == ClaimTypes.Sid).Value;
+
+            var command = dBContext.Connection.CreateCommand() as SqlCommand;
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "dbo.prcGetQRDetails";
+
+            command.Parameters.Add(new SqlParameter
+            {
+                ParameterName = "@SID",
+                DbType = DbType.String,
+                Value = stationId
+            });
+
+            List<IDictionary<String, Object>> result = dBContext.GetDatabaseResultSet(command);
+
+            if (result != null)
+            {
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<IDictionary<String, Object>, List<QRDetailsEntity>>();
+                }).CreateMapper();
+                QRDetailsEntity qrDetails = config.Map<List<QRDetailsEntity>>(result).FirstOrDefault();
+
+                if(qrDetails.QRCode.Equals(qrCode))
+                {
+                    ResponseEnity qrResponse = getQRCode(stationId);
+
+                    if(qrResponse.StatusCode == 1)
+                    {
+                        string newQRCode = qrResponse.Result.ToString();
+
+                        MqttClient client = new MqttClient(configuration["MQTT:MqttServer"]);
+                        client.Connect("HumbrellaAPI");
+                        client.Publish(stationId, Encoding.UTF8.GetBytes(newQRCode));
+
+                        ResponseEnity response = new ResponseEnity();
+                        response.StatusCode = 1;
+                        response.StatusDesc = "Success";
+                        return response;
+                    }
+                    else
+                    {
+                        ResponseEnity response = new ResponseEnity();
+                        response.StatusCode = -1;
+                        return response;
+                    }
+                }
+                else
+                {
+                    ResponseEnity response = new ResponseEnity();
+                    response.StatusCode = 0;
+                    response.StatusDesc = "Invalid QR code";
+                    return response;
+                }
+            }
+            else
+            {
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Invalid QR code. Invalid inventory id.";
+                return response;
+            }
+        }
+
         private string generateQRCode(int stationId, int partnerId)
         {
             var claims = new Claim[]
             {
                 new Claim(ClaimTypes.Sid, stationId.ToString()),
-                new Claim(ClaimTypes.GroupSid, partnerId.ToString())
+                new Claim(ClaimTypes.GroupSid, partnerId.ToString()),
+                new Claim(ClaimTypes.Thumbprint, Guid.NewGuid().ToString())
             };
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("HumbrellaAPI secret key"));
             var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);

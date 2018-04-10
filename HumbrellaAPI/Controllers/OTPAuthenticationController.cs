@@ -19,7 +19,7 @@ namespace HumbrellaAPI.Controllers
         {
             configuration = iconfiguration;
         }
-        [AppAuthorize]
+        //[AppAuthorize]
         [HttpPost]
         [Route("SendMobileOTP")]
         public IActionResult SendMobileOTP([FromBody]string mobileNumber)

@@ -22,7 +22,11 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, ModelState);
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Invalid parameter";
+                response.Result = BadRequest(ModelState).Value;
+                return StatusCode(400, response);
             }
             else
             {

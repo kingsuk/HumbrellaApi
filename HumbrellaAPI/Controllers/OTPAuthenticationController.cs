@@ -27,7 +27,10 @@ namespace HumbrellaAPI.Controllers
             Int64 number;
             if (mobileNumber == null || mobileNumber.Trim() == "" || mobileNumber.Length!=10 || !Int64.TryParse(mobileNumber, out number))
             {
-                return new BadRequestObjectResult("Mobile number invalid");
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Mobile number invalid";
+                return StatusCode(400, response);
             }
             else
             {
@@ -63,7 +66,11 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, ModelState);
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Invalid parameter";
+                response.Result = BadRequest(ModelState).Value;
+                return StatusCode(400, response);
             }
             else
             {
@@ -99,7 +106,10 @@ namespace HumbrellaAPI.Controllers
         {
             if (email == null || email.Trim() == "")
             {
-                return new BadRequestObjectResult("Email invalid");
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Email id invalid";
+                return StatusCode(400, response);
             }
             else
             {
@@ -131,7 +141,11 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, ModelState);
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Invalid parameter";
+                response.Result = BadRequest(ModelState).Value;
+                return StatusCode(400, response);
             }
             else
             {

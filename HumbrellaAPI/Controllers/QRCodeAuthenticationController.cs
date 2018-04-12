@@ -29,7 +29,10 @@ namespace HumbrellaAPI.Controllers
             Int32 number;
             if (stationId == null || stationId.Trim() == "" || !Int32.TryParse(stationId, out number))
             {
-                return new BadRequestObjectResult("Station Id invalid");
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Station Id invalid";
+                return StatusCode(400, response);
             }
             else
             {
@@ -65,7 +68,10 @@ namespace HumbrellaAPI.Controllers
         {
             if (qrCode == null || qrCode.Trim() == "")
             {
-                return new BadRequestObjectResult("QR Code invalid");
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "QR Code invalid";
+                return StatusCode(400, response);
             }
             else
             {

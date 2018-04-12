@@ -20,7 +20,11 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, ModelState);
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Invalid parameter";
+                response.Result = BadRequest(ModelState).Value;
+                return StatusCode(400, response);
             }
             else
             {
@@ -56,7 +60,11 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, ModelState);
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Invalid parameter";
+                response.Result = BadRequest(ModelState).Value;
+                return StatusCode(400, response);
             }
             else
             {
@@ -92,7 +100,10 @@ namespace HumbrellaAPI.Controllers
         {
             if (userId == null || userId.Trim() == "")
             {
-                return new BadRequestObjectResult("User Id invalid");
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "User Id invalid";
+                return StatusCode(400, response);
             }
             else
             {
@@ -128,7 +139,10 @@ namespace HumbrellaAPI.Controllers
         {
             if (email == null || email.Trim() == "")
             {
-                return new JsonResult(BadRequest("User Id invalid"));
+                ResponseEnity response = new ResponseEnity();
+                response.StatusCode = 0;
+                response.StatusDesc = "Email Id invalid";
+                return StatusCode(400, response);
             }
             else
             {

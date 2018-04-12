@@ -26,7 +26,6 @@ namespace HumbrellaAPI.Entities
         [Required]
         public string FirstName { get; set; }
 
-        [Required]
         public string MiddleName { get; set; }
 
         [Required]
@@ -35,7 +34,6 @@ namespace HumbrellaAPI.Entities
         [Required]
         public string Gender { get; set; }
 
-        [Required]
         public string PersonalMailAddress { get; set; }
     }
 }

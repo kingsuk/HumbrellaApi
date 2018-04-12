@@ -15,14 +15,14 @@ namespace HumbrellaAPI.Controllers
     [Route("api/v1/UserDetails")]
     public class UserDetailsController : Controller
     {
-        //[Authorize]
+        [Authorize]
         [HttpPost]
         [Route("PushUserDetails")]
         public IActionResult PushUserDetails([FromBody]UpdateUserDetailsEntity updateUserDetailsEntity)
         {
             if (!ModelState.IsValid)
             {
-                return new JsonResult(BadRequest(ModelState));
+                return StatusCode(400, ModelState);
             }
             else
             {

@@ -63,7 +63,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return new JsonResult(BadRequest(ModelState));
+                return StatusCode(400, ModelState);
             }
             else
             {
@@ -131,7 +131,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return new JsonResult(BadRequest(ModelState));
+                return StatusCode(400, ModelState);
             }
             else
             {

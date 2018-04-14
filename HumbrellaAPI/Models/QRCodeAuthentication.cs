@@ -79,6 +79,17 @@ namespace HumbrellaAPI.Models
 
                     if(dBResponse.StatusCode == 1)
                     {
+                        MqttClient client = new MqttClient(configuration["MQTT:MqttServer"]);
+                        client.Connect("HumbrellaAPI");
+                        client.Publish(
+                            configuration["MQTT:MqttPublisherTopicPrefix"] +stationId,
+                            Encoding.UTF8.GetBytes(newQRCode)
+                        );
+                        //client.Subscribe(
+                        //    configuration["MQTT:MqttPublisherTopicPrefix"] + stationId,
+                        //    stationResponse
+                        //);
+
                         dBResponse.Result = newQRCode;
                     }
                     return dBResponse;
@@ -101,9 +112,7 @@ namespace HumbrellaAPI.Models
 
         public ResponseEnity verifyQRCode(string qrCode)
         {
-            var handler = new JwtSecurityTokenHandler();
-            var qrCodeToken = handler.ReadToken(qrCode) as JwtSecurityToken;
-            var stationId = qrCodeToken.Claims.Single(claim => claim.Type == ClaimTypes.Sid).Value;
+            var stationId = qrCode.Split("_")[0];
 
             var command = dBContext.Connection.CreateCommand() as SqlCommand;
             command.CommandType = CommandType.StoredProcedure;
@@ -136,7 +145,10 @@ namespace HumbrellaAPI.Models
 
                         MqttClient client = new MqttClient(configuration["MQTT:MqttServer"]);
                         client.Connect("HumbrellaAPI");
-                        client.Publish(stationId, Encoding.UTF8.GetBytes(newQRCode));
+                        client.Publish(
+                            configuration["MQTT:MqttPublisherTopicPrefix"] + stationId,
+                            Encoding.UTF8.GetBytes(newQRCode)
+                        );
 
                         ResponseEnity response = new ResponseEnity();
                         response.StatusCode = 1;
@@ -169,24 +181,8 @@ namespace HumbrellaAPI.Models
 
         private string generateQRCode(int stationId, int partnerId)
         {
-            var claims = new Claim[]
-            {
-                new Claim(ClaimTypes.Sid, stationId.ToString()),
-                new Claim(ClaimTypes.GroupSid, partnerId.ToString()),
-                new Claim(ClaimTypes.Thumbprint, Guid.NewGuid().ToString())
-            };
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("HumbrellaAPI secret key"));
-            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: "humbrellaapi",
-                audience: "humbrellainventory",
-                claims: claims,
-                notBefore: DateTime.Now,
-                signingCredentials: signingCredentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            string qrCode = stationId.ToString() + "_" + partnerId.ToString() + "_" + Guid.NewGuid().ToString();
+            return qrCode;
         }
     }
 }

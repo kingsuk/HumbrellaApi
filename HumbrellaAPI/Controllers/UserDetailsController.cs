@@ -22,7 +22,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Invalid parameter";
                 response.Result = BadRequest(ModelState).Value;
@@ -34,7 +34,7 @@ namespace HumbrellaAPI.Controllers
                 {
                     string userId = HttpContext.User.Claims.Single(claim => claim.Type == ClaimTypes.Name).Value;
                     UserDetails userDetails = new UserDetails();
-                    ResponseEnity response = userDetails.pushUserDetails(updateUserDetailsEntity, userId);
+                    ResponseEntity response = userDetails.pushUserDetails(updateUserDetailsEntity, userId);
 
                     if (response.StatusCode == 1)
                     {

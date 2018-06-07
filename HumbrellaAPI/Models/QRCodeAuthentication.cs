@@ -26,7 +26,7 @@ namespace HumbrellaAPI.Models
             configuration = iconfiguration;
         }
 
-        public ResponseEnity getQRCode(string stationId)
+        public ResponseEntity getQRCode(string stationId)
         {
             var command = dBContext.Connection.CreateCommand() as SqlCommand;
             command.CommandType = CommandType.StoredProcedure;
@@ -73,9 +73,9 @@ namespace HumbrellaAPI.Models
                 {
                     var newConfig = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
+                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEntity>>();
                     }).CreateMapper();
-                    ResponseEnity dBResponse = newConfig.Map<List<ResponseEnity>>(dBResult).FirstOrDefault();
+                    ResponseEntity dBResponse = newConfig.Map<List<ResponseEntity>>(dBResult).FirstOrDefault();
 
                     if(dBResponse.StatusCode == 1)
                     {
@@ -96,21 +96,21 @@ namespace HumbrellaAPI.Models
                 }
                 else
                 {
-                    ResponseEnity response = new ResponseEnity();
+                    ResponseEntity response = new ResponseEntity();
                     response.StatusCode = -1;
                     return response;
                 }
             }
             else
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "No inventory found with this inventory id";
                 return response;
             }
         }
 
-        public ResponseEnity verifyQRCode(string qrCode)
+        public ResponseEntity verifyQRCode(string qrCode)
         {
             var stationId = qrCode.Split("_")[0];
 
@@ -137,7 +137,7 @@ namespace HumbrellaAPI.Models
 
                 if(qrDetails.QRCode.Equals(qrCode))
                 {
-                    ResponseEnity qrResponse = getQRCode(stationId);
+                    ResponseEntity qrResponse = getQRCode(stationId);
 
                     if(qrResponse.StatusCode == 1)
                     {
@@ -150,21 +150,21 @@ namespace HumbrellaAPI.Models
                             Encoding.UTF8.GetBytes(newQRCode)
                         );
 
-                        ResponseEnity response = new ResponseEnity();
+                        ResponseEntity response = new ResponseEntity();
                         response.StatusCode = 1;
                         response.StatusDesc = "Success";
                         return response;
                     }
                     else
                     {
-                        ResponseEnity response = new ResponseEnity();
+                        ResponseEntity response = new ResponseEntity();
                         response.StatusCode = -1;
                         return response;
                     }
                 }
                 else
                 {
-                    ResponseEnity response = new ResponseEnity();
+                    ResponseEntity response = new ResponseEntity();
                     response.StatusCode = 0;
                     response.StatusDesc = "Invalid QR code";
                     return response;
@@ -172,7 +172,7 @@ namespace HumbrellaAPI.Models
             }
             else
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Invalid QR code. Invalid inventory id.";
                 return response;

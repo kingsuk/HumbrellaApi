@@ -18,7 +18,7 @@ namespace HumbrellaAPI.Models
             dBContext = new DBContext();
         }
 
-        public ResponseEnity pushUserDetails(UpdateUserDetailsEntity updateUserDetailsEntity, string userId)
+        public ResponseEntity pushUserDetails(UpdateUserDetailsEntity updateUserDetailsEntity, string userId)
         {
             try
             {
@@ -68,15 +68,15 @@ namespace HumbrellaAPI.Models
                 {
                     var config = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
+                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEntity>>();
                     }).CreateMapper();
-                    ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
+                    ResponseEntity dBResponse = config.Map<List<ResponseEntity>>(result).FirstOrDefault();
 
                     return dBResponse;
                 }
                 else
                 {
-                    ResponseEnity response = new ResponseEnity();
+                    ResponseEntity response = new ResponseEntity();
                     response.StatusCode = -1;
                     return response;
                 }

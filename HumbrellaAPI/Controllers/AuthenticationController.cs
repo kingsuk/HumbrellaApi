@@ -20,7 +20,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Invalid parameter";
                 response.Result = BadRequest(ModelState).Value;
@@ -31,7 +31,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     Authentication auth = new Authentication();
-                    ResponseEnity response = auth.login(authEntity);
+                    ResponseEntity response = auth.login(authEntity);
 
                     if (response.StatusCode == 1)
                     {
@@ -60,7 +60,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Invalid parameter";
                 response.Result = BadRequest(ModelState).Value;
@@ -71,7 +71,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     Authentication auth = new Authentication();
-                    ResponseEnity response = auth.register(registrationEntity);
+                    ResponseEntity response = auth.register(registrationEntity);
 
                     if (response.StatusCode == 1)
                     {
@@ -100,7 +100,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (userId == null || userId.Trim() == "")
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "User Id invalid";
                 return StatusCode(400, response);
@@ -110,7 +110,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     Authentication auth = new Authentication();
-                    ResponseEnity response = auth.checkUserIDAvailability(userId);
+                    ResponseEntity response = auth.checkUserIDAvailability(userId);
 
                     if (response.StatusCode == 1)
                     {
@@ -139,7 +139,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (email == null || email.Trim() == "")
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Email Id invalid";
                 return StatusCode(400, response);
@@ -149,7 +149,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     Authentication auth = new Authentication();
-                    ResponseEnity response = auth.checkUserEmailAvailability(email);
+                    ResponseEntity response = auth.checkUserEmailAvailability(email);
 
                     if(response.StatusCode == 1)
                     {

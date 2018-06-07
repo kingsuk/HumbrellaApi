@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace HumbrellaAPI.Entities
 {
-    public class ResponseEnity
+    public class ResponseEntity
     {
         public int StatusCode { get; set; }
 

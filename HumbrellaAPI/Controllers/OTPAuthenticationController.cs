@@ -27,7 +27,7 @@ namespace HumbrellaAPI.Controllers
             Int64 number;
             if (mobileNumber == null || mobileNumber.Trim() == "" || mobileNumber.Length!=10 || !Int64.TryParse(mobileNumber, out number))
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Mobile number invalid";
                 return StatusCode(400, response);
@@ -37,7 +37,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     OTPAuthentication otpAuth = new OTPAuthentication(configuration);
-                    ResponseEnity response = otpAuth.SendMobileOTP(mobileNumber);
+                    ResponseEntity response = otpAuth.SendMobileOTP(mobileNumber);
 
                     if (response.StatusCode == 1)
                     {
@@ -66,7 +66,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Invalid parameter";
                 response.Result = BadRequest(ModelState).Value;
@@ -77,7 +77,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     OTPAuthentication otpAuth = new OTPAuthentication(configuration);
-                    ResponseEnity response = otpAuth.VerifyMobileOTP(otpDetails.ID, otpDetails.OTP);
+                    ResponseEntity response = otpAuth.VerifyMobileOTP(otpDetails.ID, otpDetails.OTP);
 
                     if (response.StatusCode == 1)
                     {
@@ -106,7 +106,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (email == null || email.Trim() == "")
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Email id invalid";
                 return StatusCode(400, response);
@@ -116,7 +116,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     OTPAuthentication otpAuth = new OTPAuthentication(configuration);
-                    ResponseEnity response = otpAuth.SendEmailOTP(email);
+                    ResponseEntity response = otpAuth.SendEmailOTP(email);
 
                     if (response.StatusCode == 1)
                     {
@@ -141,7 +141,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Invalid parameter";
                 response.Result = BadRequest(ModelState).Value;
@@ -152,7 +152,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     OTPAuthentication otpAuth = new OTPAuthentication(configuration);
-                    ResponseEnity response = otpAuth.VerifyEmailOTP(otpDetails.ID, otpDetails.OTP);
+                    ResponseEntity response = otpAuth.VerifyEmailOTP(otpDetails.ID, otpDetails.OTP);
 
                     if (response.StatusCode == 1)
                     {

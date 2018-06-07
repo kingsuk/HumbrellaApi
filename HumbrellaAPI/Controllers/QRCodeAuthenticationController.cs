@@ -29,7 +29,7 @@ namespace HumbrellaAPI.Controllers
             Int32 number;
             if (stationId == null || stationId.Trim() == "" || !Int32.TryParse(stationId, out number))
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "Station Id invalid";
                 return StatusCode(400, response);
@@ -39,7 +39,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     QRCodeAuthentication qRCode = new QRCodeAuthentication(configuration);
-                    ResponseEnity response = qRCode.getQRCode(stationId);
+                    ResponseEntity response = qRCode.getQRCode(stationId);
 
                     if (response.StatusCode == 1)
                     {
@@ -68,7 +68,7 @@ namespace HumbrellaAPI.Controllers
         {
             if (qrCode == null || qrCode.Trim() == "")
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = 0;
                 response.StatusDesc = "QR Code invalid";
                 return StatusCode(400, response);
@@ -78,7 +78,7 @@ namespace HumbrellaAPI.Controllers
                 try
                 {
                     QRCodeAuthentication qRCode = new QRCodeAuthentication(configuration);
-                    ResponseEnity response = qRCode.verifyQRCode(qrCode);
+                    ResponseEntity response = qRCode.verifyQRCode(qrCode);
 
                     if (response.StatusCode == 1)
                     {

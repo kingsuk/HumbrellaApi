@@ -26,7 +26,7 @@ namespace HumbrellaAPI.Models
             configuration = iconfiguration;
         }
 
-        public ResponseEnity SendMobileOTP(string mobileNumber)
+        public ResponseEntity SendMobileOTP(string mobileNumber)
         {
             var OTP = generateOTP();
 
@@ -52,9 +52,9 @@ namespace HumbrellaAPI.Models
             {
                 var config = new MapperConfiguration(cfg =>
                 {
-                    cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
+                    cfg.CreateMap<IDictionary<String, Object>, List<ResponseEntity>>();
                 }).CreateMapper();
-                ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
+                ResponseEntity dBResponse = config.Map<List<ResponseEntity>>(result).FirstOrDefault();
 
                 if (dBResponse.StatusCode == 1)
                 {
@@ -71,13 +71,13 @@ namespace HumbrellaAPI.Models
 
                     if (message.Sid != null)
                     {
-                        ResponseEnity response = new ResponseEnity();
+                        ResponseEntity response = new ResponseEntity();
                         response.StatusCode = 1;
                         return response;
                     }
                     else
                     {
-                        ResponseEnity response = new ResponseEnity();
+                        ResponseEntity response = new ResponseEntity();
                         response.StatusCode = 0;
                         response.StatusDesc = "Message could not be sent to the number";
                         return response;
@@ -88,13 +88,13 @@ namespace HumbrellaAPI.Models
             }
             else
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = -1;
                 return response;
             }
         }
 
-        public ResponseEnity VerifyMobileOTP(string mobileNumber, string OTP)
+        public ResponseEntity VerifyMobileOTP(string mobileNumber, string OTP)
         {
             var command = dBContext.Connection.CreateCommand() as SqlCommand;
             command.CommandType = CommandType.StoredProcedure;
@@ -121,14 +121,14 @@ namespace HumbrellaAPI.Models
                     TimeSpan timeSpan = DateTime.UtcNow.Subtract(otpDetails.SentTime);
                     if(timeSpan.TotalMinutes <= 15)
                     {
-                        ResponseEnity response = new ResponseEnity();
+                        ResponseEntity response = new ResponseEntity();
                         response.StatusCode = 1;
                         response.StatusDesc = "Valid";
                         return response;
                     }
                     else
                     {
-                        ResponseEnity response = new ResponseEnity();
+                        ResponseEntity response = new ResponseEntity();
                         response.StatusCode = 0;
                         response.StatusDesc = "OTP time expired";
                         return response;
@@ -136,7 +136,7 @@ namespace HumbrellaAPI.Models
                 }
                 else
                 {
-                    ResponseEnity response = new ResponseEnity();
+                    ResponseEntity response = new ResponseEntity();
                     response.StatusCode = 0;
                     response.StatusDesc = "Invalid OTP";
                     return response;
@@ -144,13 +144,13 @@ namespace HumbrellaAPI.Models
             }
             else
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = -1;
                 return response;
             }
         }
 
-        public ResponseEnity SendEmailOTP(string email)
+        public ResponseEntity SendEmailOTP(string email)
         {
             var OTP = generateOTP();
 
@@ -176,9 +176,9 @@ namespace HumbrellaAPI.Models
             {
                 var config = new MapperConfiguration(cfg =>
                 {
-                    cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
+                    cfg.CreateMap<IDictionary<String, Object>, List<ResponseEntity>>();
                 }).CreateMapper();
-                ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
+                ResponseEntity dBResponse = config.Map<List<ResponseEntity>>(result).FirstOrDefault();
 
                 if (dBResponse.StatusCode == 1)
                 {
@@ -205,13 +205,13 @@ namespace HumbrellaAPI.Models
             }
             else
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = -1;
                 return response;
             }
         }
 
-        public ResponseEnity VerifyEmailOTP(string email, string OTP)
+        public ResponseEntity VerifyEmailOTP(string email, string OTP)
         {
             var command = dBContext.Connection.CreateCommand() as SqlCommand;
             command.CommandType = CommandType.StoredProcedure;
@@ -238,14 +238,14 @@ namespace HumbrellaAPI.Models
                     TimeSpan timeSpan = DateTime.UtcNow.Subtract(otpDetails.SentTime);
                     if (timeSpan.TotalMinutes <= 15)
                     {
-                        ResponseEnity response = new ResponseEnity();
+                        ResponseEntity response = new ResponseEntity();
                         response.StatusCode = 1;
                         response.StatusDesc = "Valid";
                         return response;
                     }
                     else
                     {
-                        ResponseEnity response = new ResponseEnity();
+                        ResponseEntity response = new ResponseEntity();
                         response.StatusCode = 0;
                         response.StatusDesc = "OTP time expired";
                         return response;
@@ -253,7 +253,7 @@ namespace HumbrellaAPI.Models
                 }
                 else
                 {
-                    ResponseEnity response = new ResponseEnity();
+                    ResponseEntity response = new ResponseEntity();
                     response.StatusCode = 0;
                     response.StatusDesc = "Invalid OTP";
                     return response;
@@ -261,7 +261,7 @@ namespace HumbrellaAPI.Models
             }
             else
             {
-                ResponseEnity response = new ResponseEnity();
+                ResponseEntity response = new ResponseEntity();
                 response.StatusCode = -1;
                 return response;
             }

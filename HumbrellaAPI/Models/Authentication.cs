@@ -25,7 +25,7 @@ namespace HumbrellaAPI.Models
             dBContext = new DBContext();
         }
 
-        public ResponseEnity login(AuthenticationEntity authenticationEntity)
+        public ResponseEntity login(AuthenticationEntity authenticationEntity)
         {
             try
             {
@@ -51,9 +51,9 @@ namespace HumbrellaAPI.Models
                 {
                     var config = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
+                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEntity>>();
                     }).CreateMapper();
-                    ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
+                    ResponseEntity dBResponse = config.Map<List<ResponseEntity>>(result).FirstOrDefault();
 
                     if (dBResponse.StatusCode == 1)
                     {
@@ -63,7 +63,7 @@ namespace HumbrellaAPI.Models
                 }
                 else
                 {
-                    ResponseEnity response = new ResponseEnity();
+                    ResponseEntity response = new ResponseEntity();
                     response.StatusCode = -1;
                     return response;
                 }
@@ -74,7 +74,7 @@ namespace HumbrellaAPI.Models
             }
         }
 
-        public ResponseEnity register(RegistrationEntity registrationEntity)
+        public ResponseEntity register(RegistrationEntity registrationEntity)
         {
             try
             {
@@ -110,9 +110,9 @@ namespace HumbrellaAPI.Models
                         {
                             var config = new MapperConfiguration(cfg =>
                             {
-                                cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
+                                cfg.CreateMap<IDictionary<String, Object>, List<ResponseEntity>>();
                             }).CreateMapper();
-                            ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
+                            ResponseEntity dBResponse = config.Map<List<ResponseEntity>>(result).FirstOrDefault();
 
                             if (dBResponse.StatusCode == 1)
                             {
@@ -122,14 +122,14 @@ namespace HumbrellaAPI.Models
                         }
                         else
                         {
-                            ResponseEnity response = new ResponseEnity();
+                            ResponseEntity response = new ResponseEntity();
                             response.StatusCode = -1;
                             return response;
                         }
                     }
                     else
                     {
-                        ResponseEnity response = new ResponseEnity();
+                        ResponseEntity response = new ResponseEntity();
                         response.StatusCode = 0;
                         response.StatusDesc = "User email already exists.";
                         return response;
@@ -137,7 +137,7 @@ namespace HumbrellaAPI.Models
                 }
                 else
                 {
-                    ResponseEnity response = new ResponseEnity();
+                    ResponseEntity response = new ResponseEntity();
                     response.StatusCode = 0;
                     response.StatusDesc = "UserId already exists.";
                     return response;
@@ -149,7 +149,7 @@ namespace HumbrellaAPI.Models
             }
         }
 
-        public ResponseEnity checkUserIDAvailability(string UserId)
+        public ResponseEntity checkUserIDAvailability(string UserId)
         {
             try
             {
@@ -169,15 +169,15 @@ namespace HumbrellaAPI.Models
                 {
                     var config = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
+                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEntity>>();
                     }).CreateMapper();
-                    ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
+                    ResponseEntity dBResponse = config.Map<List<ResponseEntity>>(result).FirstOrDefault();
 
                     return dBResponse;
                 }
                 else
                 {
-                    ResponseEnity response = new ResponseEnity();
+                    ResponseEntity response = new ResponseEntity();
                     response.StatusCode = -1;
                     return response;
                 }
@@ -188,7 +188,7 @@ namespace HumbrellaAPI.Models
             }
         }
 
-        public ResponseEnity checkUserEmailAvailability(string email)
+        public ResponseEntity checkUserEmailAvailability(string email)
         {
             try
             {
@@ -208,15 +208,15 @@ namespace HumbrellaAPI.Models
                 {
                     var config = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEnity>>();
+                        cfg.CreateMap<IDictionary<String, Object>, List<ResponseEntity>>();
                     }).CreateMapper();
-                    ResponseEnity dBResponse = config.Map<List<ResponseEnity>>(result).FirstOrDefault();
+                    ResponseEntity dBResponse = config.Map<List<ResponseEntity>>(result).FirstOrDefault();
 
                     return dBResponse;
                 }
                 else
                 {
-                    ResponseEnity response = new ResponseEnity();
+                    ResponseEntity response = new ResponseEntity();
                     response.StatusCode = -1;
                     return response;
                 }
